@@ -8,7 +8,7 @@ public class Player : MonoBehaviour {
 	private CharacterController2D _controller;
 	private float _normalizedHorizontalSpeed;
 
-	public float MaxSpeed;
+	public float MaxSpeed = 8;
 	public float SpeedAccelerationOnGround = 10f;
 	public float SppedAccelerationInAir = 5f;
 
@@ -24,5 +24,36 @@ public class Player : MonoBehaviour {
 		HandleInput ();
 
 		var movementFactor = _controller.State.IsGrounded ? SpeedAccelerationOnGround : SppedAccelerationInAir;
+		_controller.SetHorizontalForce (Mathf.Lerp (_controller.Velocity.x, _normalizedHorizontalSpeed * MaxSpeed, Time.deltaTime * movementFactor));
 	}
+
+
+	private void HandleInput(){
+
+		if (Input.GetKey (KeyCode.D)) {
+			_normalizedHorizontalSpeed = 1;
+
+			if (!_isFacingRight) 
+				Flip ();
+			} else if (Input.GetKey (KeyCode.A)) {
+				_normalizedHorizontalSpeed = -1;	
+
+				if (_isFacingRight)
+					Flip ();
+			} else {
+				_normalizedHorizontalSpeed = 0;
+			}
+
+			if(_controller.CanJump && Input.GetKeyDown(KeyCode.Space)){
+				_controller.Jump ();
+			}	
+		}
+
+
+	private void Flip(){
+
+		transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+		_isFacingRight = transform.localScale.x > 0;
+	}
+
 }
