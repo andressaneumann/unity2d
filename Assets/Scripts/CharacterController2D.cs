@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour {
+public class CharacterController2D : MonoBehaviour {
 
 	private const float SkinWidth = .02f;
 	private const int TotalHorizontalRays = 8;
@@ -28,6 +28,51 @@ public class NewBehaviourScript : MonoBehaviour {
 	
 	}
 
+	public void SetHorizontalForce(float x){
+	
+	}
 
+	public void SetVerticalForce(float y){
+		
+	}
 
+	public void Jump(){
+	
+	}
+
+	public void LateUpdate(){
+	
+	}
+
+	private void Move(Vector2 deltaMovement){
+		
+	}
+
+	private void HandlePlatform(){
+		
+	}
+
+	private void CalculateRayOrigins(){
+		
+	}
+
+	private void MoveHorizontally(ref Vector2 deltaMoviment){
+	
+	}
+
+	private void MoveVertically(ref Vector2 deltaMoviment){
+		
+	}
+
+	private void HandleVerticalSlope(ref Vector2 deltaMoviment){
+	
+	}
+
+	private void HandleHorizontalSlope(ref Vector2 deltaMoviment, float angle, bool isGoingRight){
+	
+	}
+
+	public void OnTriggerEnter2D(Collider2D other){
+	
+	}
 }
