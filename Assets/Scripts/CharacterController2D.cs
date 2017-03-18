@@ -14,6 +14,7 @@ public class CharacterController2D : MonoBehaviour
 
 	public ControllerState2D State { get; private set; }
 	public Vector2 Velocity { get { return _velocity; } }
+	public Vector3 PlatformVelocity{ get; private set;}
 	public bool CanJump { 
 		get { 
 			if(Parameters.JumpRestrictions == ControllerParameters2D.JumpBehavior.CanJumpAnywhere)
@@ -35,12 +36,17 @@ public class CharacterController2D : MonoBehaviour
 	private Vector3 _localScale;
 	private BoxCollider2D _boxCollider;
 	public ControllerParameters2D _overrideParameters;
-	public float _jumpIn;
+	private float _jumpIn;
+	private GameObject _lastStandingOn;
 
 	private Vector3
-	_raycastTopLeft,
-	_raycastBottomRight,
-	_raycastBottomLeft;
+		_raycastTopLeft,
+		_raycastBottomRight,
+		_raycastBottomLeft;
+
+	private Vector3
+		_activeGlobalPlatformPoint,
+		_activeLocalPlatformPoint;
 
 	private float 
 	_verticalDistanceBetweenRays,
@@ -127,10 +133,43 @@ public class CharacterController2D : MonoBehaviour
 
 		if(State.IsMovingUpSlope)
 			_velocity.y = 0;
+
+		if (StandingOn != null) {
+			_activeGlobalPlatformPoint = transform.position;
+			_activeLocalPlatformPoint = StandingOn.transform.InverseTransformPoint (transform.position);
+
+			if (_lastStandingOn != StandingOn) {
+
+				if (_lastStandingOn != null)
+					_lastStandingOn.SendMessage ("ControllerExit2D", this, SendMessageOptions.DontRequireReceiver);
+
+				StandingOn.SendMessage ("ControllerEnter2D", this, SendMessageOptions.DontRequireReceiver);
+				_lastStandingOn = StandingOn;
+			} else if (StandingOn != null)
+				StandingOn.SendMessage ("ControllerStay2D", this, SendMessageOptions.DontRequireReceiver);
+
+		} else if(_lastStandingOn != null){
+			_lastStandingOn.SendMessage ("ControllerExit2D", this, SendMessageOptions.DontRequireReceiver);
+			_lastStandingOn = null;
+		}
+			
 	}
 
 	private void HandlePlatforms()
 	{
+		if (StandingOn != null) {
+			var newGlobalPlatformPoint = StandingOn.transform.TransformPoint (_activeLocalPlatformPoint);
+			var moveDistance = newGlobalPlatformPoint - _activeGlobalPlatformPoint;
+
+			if (moveDistance != Vector3.zero)
+				transform.Translate (moveDistance, Space.World);
+
+			PlatformVelocity = (newGlobalPlatformPoint - _activeGlobalPlatformPoint) / Time.deltaTime;
+		} else 
+			PlatformVelocity = Vector3.zero;
+
+		StandingOn = null;
+		
 	}
 
 	private void CalculateRayOrigins()
