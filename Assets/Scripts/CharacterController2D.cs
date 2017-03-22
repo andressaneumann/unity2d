@@ -4,7 +4,7 @@ using System.Collections;
 public class CharacterController2D : MonoBehaviour 
 {
 	private const float SkinWidth = .02f;
-	private const int TotalHorizontalRays = 8;
+	private const int TotalHorizontalRays = 4;
 	private const int TotalVerticalRays = 4;
 
 	private static readonly float SlopeLimitTangant = Mathf.Tan(75f * Mathf.Deg2Rad);
@@ -121,6 +121,9 @@ public class CharacterController2D : MonoBehaviour
 			}
 
 			MoveVertically(ref deltaMovement);
+
+			CorrectHorizontalPlacement (ref deltaMovement, true);
+			CorrectHorizontalPlacement (ref deltaMovement, false);
 		}
 
 		_transform.Translate (deltaMovement, Space.World);
@@ -180,6 +183,26 @@ public class CharacterController2D : MonoBehaviour
 		_raycastTopLeft = _transform.position + new Vector3(center.x - size.x + SkinWidth, center.y + size.y - SkinWidth);
 		_raycastBottomRight = _transform.position + new Vector3(center.x + size.x - SkinWidth, center.y - size.y + SkinWidth);
 		_raycastBottomLeft = _transform.position + new Vector3(center.x - size.x + SkinWidth, center.y - size.y + SkinWidth);
+	}
+
+	private void CorrectHorizontalPlacement(ref Vector2 deltaMovement, bool isRight){
+
+		var halfWidth = (_boxCollider.size.x * _localScale.x) / 2;
+		var rayOrigin = isRight ? _raycastBottomRight : _raycastBottomLeft;
+
+		if (isRight)
+			rayOrigin.x -= (halfWidth - SkinWidth);
+		else
+			rayOrigin.x += (halfWidth - SkinWidth);
+
+		var rayDirection = isRight ? Vector2.right : -Vector2.right;
+		var offset = 0f;
+
+		for(var i = 1; i < TotalHorizontalRays -1; i++){
+
+			var rayVector = new Vector2 (deltaMovement.x + rayOrigin.x, deltaMovement.y + rayOrigin.y + (i * _verticalDistanceBetweenRays));
+		}
+	
 	}
 
 	private void MoveHorizontally(ref Vector2 deltaMovement)
