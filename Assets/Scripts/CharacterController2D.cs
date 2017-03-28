@@ -201,7 +201,15 @@ public class CharacterController2D : MonoBehaviour
 		for(var i = 1; i < TotalHorizontalRays -1; i++){
 
 			var rayVector = new Vector2 (deltaMovement.x + rayOrigin.x, deltaMovement.y + rayOrigin.y + (i * _verticalDistanceBetweenRays));
+
+			var raycastHit = Physics2D.Raycast (rayVector, rayDirection, halfWidth, PlatformMask);
+			if (!raycastHit)
+				continue;
+
+			offset = isRight ? ((raycastHit.point.x - transform.position.x) - halfWidth) : (halfWidth - (_transform.position.x - raycastHit.point.x));
 		}
+
+		deltaMovement.x += offset;
 	
 	}
 
@@ -342,12 +350,20 @@ public class CharacterController2D : MonoBehaviour
 
 	public void OnTriggerEnter2D(Collider2D other)
 	{
+		var parameters = other.gameObject.GetComponent<ControllerPhysicsVolume2D> ();
+		if (parameters == null) {
+			return;
+		}
 
+		_overrideParameters = parameters.Parameters;
 	}
 
 	public void OnTriggerExit2D(Collider2D other)
 	{
-
-
+		var parameters = other.gameObject.GetComponent<ControllerPhysicsVolume2D> ();
+		if (parameters == null) {
+			return;
+		}
+		_overrideParameters = null;
 	}
 }
