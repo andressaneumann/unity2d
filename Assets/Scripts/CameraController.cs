@@ -10,6 +10,7 @@ public class CameraController : MonoBehaviour {
 	public Vector2 Smoothing;
 
 	public BoxCollider2D Bounds;
+	private Camera camera;
 
 	private Vector3	
 		_min,
@@ -21,6 +22,7 @@ public class CameraController : MonoBehaviour {
 
 		_min = Bounds.bounds.min;
 		_max = Bounds.bounds.max;
+		//camera = GetComponent<Camera> ();
 	}
 
 	public void Update(){
@@ -42,9 +44,13 @@ public class CameraController : MonoBehaviour {
 
 		x = Mathf.Clamp (x, _min.x + cameraHalfWidth, _max.x - cameraHalfWidth);
 		y = Mathf.Clamp (y, _min.y + camera.orthographicSize, _max.y - cameraHalfWidth);
+
+		transform.position = new Vector3 (x, y, transform.position.z);
 	}
 
 
 		
 			
 }
+
+
