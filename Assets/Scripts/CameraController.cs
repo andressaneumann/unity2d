@@ -1,56 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using UnityEngine;
+using System.Collections;
 
 public class CameraController : MonoBehaviour {
 
-	public Transform Player;
-	public Vector2 Margin;
-	public Vector2 Smoothing;
+	private Vector2 velocity;
+	public float smoothTimeY;
+	public float smoothTimeX;
 
-	public BoxCollider2D Bounds;
-	private Camera camera;
+	public GameObject player;
 
-	private Vector3	
-		_min,
-		_max;
+	public bool bounds;
+	public Vector3 minCameraPos;
+	public Vector3 maxCameraPos;
 
-	public bool IsFollowing{ get; set;}
-
-	public void Start(){
-
-		_min = Bounds.bounds.min;
-		_max = Bounds.bounds.max;
-		//camera = GetComponent<Camera> ();
+	void Start(){
+		player = GameObject.FindGameObjectWithTag ("Player");
 	}
 
-	public void Update(){
+	void FixedUpdate(){
 
-		var x = transform.position.x;
-		var y = transform.position.y;
+		float posX = Mathf.SmoothDamp (transform.position.x, player.transform.position.x, ref velocity.x, smoothTimeX);
+		float posY = Mathf.SmoothDamp (transform.position.y, player.transform.position.y, ref velocity.x, smoothTimeY);
 
-		if (IsFollowing) {
-			if (Mathf.Abs (x - Player.position.x) > Margin.x) {
-				x = Mathf.Lerp (x, Player.position.x, Smoothing.x * Time.deltaTime);
-			}
+		transform.position = new Vector3 (posX, posY, transform.position.z);
 
-			if (Mathf.Abs (y - Player.position.y) > Margin.y) {
-				y = Mathf.Lerp (y, Player.position.y, Smoothing.y * Time.deltaTime);
-			}
+		/**
+		if (bounds) {
+			transform.position = new Vector3 (Mathf.Clamp(transform.position.x, minCameraPos.x, maxCameraPos.x), 
+				Mathf.Clamp(transform.position.y, minCameraPos.y, maxCameraPos.y),
+				Mathf.Clamp(transform.position.z, minCameraPos.z, maxCameraPos.z));
 		}
 
-		var cameraHalfWidth = camera.orthographicSize * ((float)Screen.width / Screen.height);
-
-		x = Mathf.Clamp (x, _min.x + cameraHalfWidth, _max.x - cameraHalfWidth);
-		y = Mathf.Clamp (y, _min.y + camera.orthographicSize, _max.y - cameraHalfWidth);
-
-		transform.position = new Vector3 (x, y, transform.position.z);
+		*/
 	}
-
-
-		
-			
 }
-
-
